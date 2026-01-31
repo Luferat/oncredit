@@ -1,6 +1,7 @@
 // lib/templates/drawer.dart
 
 import 'package:flutter/material.dart';
+import 'apptitle.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -22,26 +23,7 @@ class MyDrawer extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'ON',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange,
-                        fontSize: 25,
-                      ),
-                    ),
-                    SizedBox(width: 2),
-                    Icon(Icons.credit_score, color: Colors.white, size: 30),
-                    SizedBox(width: 2),
-                    Text(
-                      'Credit',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
-                  ],
-                ),
+                AppTitle(),
                 SizedBox(height: 3),
                 Text(
                   'Sua caderneta digital!',
