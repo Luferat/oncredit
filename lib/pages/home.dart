@@ -1,7 +1,7 @@
 // lib/pages/home.dart
 
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import '../config/app_config.dart';
 import '../templates/appbar.dart';
 import '../templates/drawer.dart';
 
@@ -13,22 +13,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final AuthService _authService = AuthService();
-  String _status = 'Desconectado';
+  late final String _status;
 
   @override
   void initState() {
     super.initState();
-    _loginAnonimo();
-  }
-
-  Future<void> _loginAnonimo() async {
-    final user = await _authService.signInAnonymously();
-    setState(() {
-      _status = user != null
-          ? 'Logado anonimamente: ${user.uid}'
-          : 'Falha no login';
-    });
+    _status = 'UID ativo: ${AppConfig.fixedUid}';
   }
 
   @override
@@ -36,7 +26,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: MyAppBar(title: 'OnCredit'),
       drawer: const MyDrawer(),
-      body: Center(child: Text(_status)),
+      body: Center(
+        child: Text(
+          _status,
+          style: const TextStyle(fontSize: 16),
+        ),
+      ),
     );
   }
 }
