@@ -5,14 +5,23 @@ class AppTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      splashColor: Colors.white24,
-      highlightColor: Colors.white10,
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+    final isHome = currentRoute == '/';
 
+    return InkWell(
       borderRadius: BorderRadius.circular(8),
-      onTap: () {
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-      },
+
+      splashColor: isHome ? Colors.transparent : Colors.white24,
+      highlightColor: isHome ? Colors.transparent : Colors.white10,
+
+      onTap: isHome
+          ? null
+          : () {
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil('/', (route) => false);
+            },
+
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: const [
