@@ -1,7 +1,6 @@
 // lib/pages/home.dart
 
 import 'package:flutter/material.dart';
-import '../config/app_config.dart';
 import '../templates/appbar.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _status = 'UID ativo: ${AppConfig.fixedUid}';
+    _status = 'UID ativo: dev_uid_001';
   }
 
   @override
