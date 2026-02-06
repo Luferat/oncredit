@@ -158,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () async {
                   final created = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const NewClientPage(),),
+                    MaterialPageRoute(builder: (_) => const NewClientPage()),
                   );
 
                   setState(() {

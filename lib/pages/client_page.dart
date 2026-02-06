@@ -101,8 +101,6 @@ class ClientPage extends StatelessWidget {
                         _line('Débito atual', summary['balance']!, bold: true),
 
                         const SizedBox(height: 12),
-
-
                       ],
                     ),
                   ),
@@ -116,7 +114,10 @@ class ClientPage extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.person_add, size: 22),
-                label: const Text('Ver histórico completo',style: TextStyle(fontSize: 18),),
+                label: const Text(
+                  'Ver histórico completo',
+                  style: TextStyle(fontSize: 18),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                   foregroundColor: Colors.white,
@@ -126,8 +127,7 @@ class ClientPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          ClientHistoryPage(client: client),
+                      builder: (_) => ClientHistoryPage(client: client),
                     ),
                   );
                 },

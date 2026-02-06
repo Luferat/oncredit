@@ -1,3 +1,5 @@
+// lib/pages/new_client_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:oncredit/templates/appbar.dart';
 import '../services/client_service.dart';
@@ -6,7 +8,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 final _cpfMask = MaskTextInputFormatter(
   mask: '###.###.###-##',
-  filter: { "#": RegExp(r'[0-9]') },
+  filter: {"#": RegExp(r'[0-9]')},
 );
 
 class NewClientPage extends StatefulWidget {
@@ -103,7 +105,6 @@ class _NewClientPageState extends State<NewClientPage> {
 
               Column(
                 children: [
-
                   ..._phoneControllers.map((controller) {
                     final index = _phoneControllers.indexOf(controller);
 
@@ -156,10 +157,7 @@ class _NewClientPageState extends State<NewClientPage> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.save, size: 22),
-                  label: const Text(
-                    'Salvar',
-                    style: TextStyle(fontSize: 18),
-                  ),
+                  label: const Text('Salvar', style: TextStyle(fontSize: 18)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
                     foregroundColor: Colors.white,
