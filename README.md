@@ -1,6 +1,6 @@
 # oncredit
 
-Aplicativo Dart & Flutter para controle de pgamentos fiados.
+Aplicativo Dart & Flutter para controle de pagamentos fiados.
 
 Uma versão Web funcional do aplicativo está disonível em:
 
