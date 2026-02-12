@@ -52,4 +52,17 @@ class ClientService {
 
     return data.values.any((c) => c['cpf'] == cpf);
   }
+
+  Future<void> updateClient({
+    required String id,
+    required String name,
+    required List<String> phones,
+  }) async {
+    final uid = AppConfig.fixedUid;
+
+    await _dio.patch(
+      '${AppConfig.baseUrl}/users/$uid/clients/$id.json',
+      data: {'name': name, 'phones': phones},
+    );
+  }
 }
