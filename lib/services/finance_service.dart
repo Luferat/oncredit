@@ -113,8 +113,29 @@ class FinanceService {
       }
     }
 
-    history.sort((a, b) => b.date.compareTo(a.date)); // mais recente primeiro
+    history.sort((a, b) => b.date.compareTo(a.date));
 
     return history;
+  }
+
+  Future<void> deleteClientHistory(String clientId) async {
+    final uid = AppConfig.fixedUid;
+
+    Future<void> deleteByClient(String path) async {
+      final res = await _dio.get('${AppConfig.baseUrl}/users/$uid/$path.json');
+
+      final data = res.data as Map<String, dynamic>? ?? {};
+
+      for (final entry in data.entries) {
+        if (entry.value['clientId'] == clientId) {
+          await _dio.delete(
+            '${AppConfig.baseUrl}/users/$uid/$path/${entry.key}.json',
+          );
+        }
+      }
+    }
+
+    await deleteByClient('purchases');
+    await deleteByClient('payments');
   }
 }

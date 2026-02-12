@@ -1,11 +1,29 @@
 // lib/pages/client_edit_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:oncredit/templates/appbar.dart';
 import '../models/client.dart';
 import '../services/client_service.dart';
+import '../services/finance_service.dart';
 import '../widgets/client_form.dart';
 import 'client_page.dart';
+
+enum ClientEditResult { updated, deleted }
+
+String formatPhone(String value) {
+  final formatter = MaskTextInputFormatter(
+    mask: '(##) #########',
+    filter: {'#': RegExp(r'[0-9]')},
+  );
+
+  formatter.formatEditUpdate(
+    const TextEditingValue(),
+    TextEditingValue(text: value),
+  );
+
+  return formatter.getMaskedText();
+}
 
 class ClientEditPage extends StatefulWidget {
   final Client client;
@@ -30,7 +48,7 @@ class _ClientEditPageState extends State<ClientEditPage> {
     _nameController = TextEditingController(text: widget.client.name);
     _cpfController = TextEditingController(text: widget.client.formattedCpf);
     _phones = widget.client.phones
-        .map((p) => TextEditingController(text: p))
+        .map((p) => TextEditingController(text: formatPhone(p)))
         .toList();
   }
 
@@ -64,9 +82,8 @@ class _ClientEditPageState extends State<ClientEditPage> {
     );
 
     if (!mounted) return;
-    Navigator.pop(context, true);
+    Navigator.pop(context, ClientEditResult.updated);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +120,7 @@ class _ClientEditPageState extends State<ClientEditPage> {
         child: ElevatedButton.icon(
           icon: const Icon(Icons.delete),
           label: const Text('Apagar Cliente'),
-          onPressed: () {},
+          onPressed: _deleteClient,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
             foregroundColor: Colors.white,
@@ -113,5 +130,63 @@ class _ClientEditPageState extends State<ClientEditPage> {
         ),
       ),
     );
+  }
+
+  Future<bool> _confirmDelete() async {
+    final controller = TextEditingController();
+    bool confirmed = false;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text('Apagar cliente'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Tem certeza que deseja apagar ${widget.client.name}?\n\n'
+                  'Essa ação apagará todo o histórico financeiro.\n\n'
+                  'Digite APAGAR para confirmar.',
+            ),
+            const SizedBox(height: 12),
+            TextField(controller: controller),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (controller.text.trim().toUpperCase() == 'APAGAR') {
+                confirmed = true;
+                Navigator.pop(context, true);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Continuar'),
+          ),
+        ],
+      ),
+    );
+
+    return confirmed;
+  }
+
+  Future<void> _deleteClient() async {
+    final ok = await _confirmDelete();
+    if (!ok) return;
+
+    final clientService = ClientService();
+    final financeService = FinanceService();
+
+    await financeService.deleteClientHistory(widget.client.id);
+    await clientService.deleteClient(widget.client.id);
+
+    if (!mounted) return;
+
+    Navigator.pop(context, ClientEditResult.deleted);
   }
 }

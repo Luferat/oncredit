@@ -7,6 +7,7 @@ import '../templates/appbar.dart';
 import '../config/app_config.dart';
 import '../tools/formatters.dart';
 import '../services/finance_service.dart';
+import 'client_edit_page.dart';
 import 'client_page.dart';
 import 'new_client_page.dart';
 
@@ -27,6 +28,12 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   String _search = '';
 
+  void _reloadClients() {
+    setState(() {
+      _clientsFuture = _clientService.getClients();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +53,6 @@ class _HomePageState extends State<HomePage> {
       appBar: MyAppBar(),
       body: Column(
         children: [
-          // OPCIONAL: Identificação da base de dados (Uid)
           Align(
             alignment: Alignment.centerRight,
             heightFactor: 1,
@@ -56,7 +62,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          // --- Saldo ---
           FutureBuilder<double>(
             future: _financeService.getTotalBalance(),
             builder: (context, snapshot) {
@@ -98,12 +103,10 @@ class _HomePageState extends State<HomePage> {
 
           const SizedBox(height: 8),
 
-          // --- Busca ---
           _buildSearchField(),
 
           const SizedBox(height: 8),
 
-          // --- Lista de clientes ---
           Expanded(
             child: FutureBuilder<List<Client>>(
               future: _clientsFuture,
@@ -127,15 +130,26 @@ class _HomePageState extends State<HomePage> {
 
                     return ListTile(
                       leading: const CircleAvatar(child: Icon(Icons.person)),
+                      contentPadding: const EdgeInsets.only(left: 40.0),
                       title: Text(client.name),
                       subtitle: Text('CPF: ${client.formattedCpf}'),
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        final result = await Navigator.push<ClientEditResult>(
                           context,
                           MaterialPageRoute(
                             builder: (_) => ClientPage(client: client),
                           ),
                         );
+
+                        if (result == ClientEditResult.deleted) {
+                          _reloadClients();
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Cliente apagado com sucesso'),
+                            ),
+                          );
+                        }
                       },
                     );
                   },
@@ -144,7 +158,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          // Novo cliente
           Padding(
             padding: const EdgeInsets.all(16),
             child: SizedBox(
@@ -166,7 +179,7 @@ class _HomePageState extends State<HomePage> {
                   });
 
                   if (created == true) {
-                    setState(() {}); // força rebuild e recarrega a lista
+                    setState(() {});
                   }
                 },
                 style: ElevatedButton.styleFrom(

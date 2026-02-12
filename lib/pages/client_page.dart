@@ -25,7 +25,6 @@ class ClientPage extends StatefulWidget {
 }
 
 class _ClientPageState extends State<ClientPage> {
-
   late Client _client;
 
   @override
@@ -167,40 +166,47 @@ class _ClientPageState extends State<ClientPage> {
               onPressed: () async {
                 final confirmed = await showDialog<bool>(
                   context: context,
-                  builder: (_) =>
-                      AlertDialog(
-                        title: const Text('Editar cliente'),
-                        content: const Text(
-                          'As alterações feitas não poderão ser desfeitas.\n\nDeseja continuar?',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancelar'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Continuar'),
-                          ),
-                        ],
+                  builder: (_) => AlertDialog(
+                    title: const Text('Editar cliente'),
+                    content: const Text(
+                      'As alterações feitas não poderão ser desfeitas.\n\nDeseja continuar?',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Cancelar'),
                       ),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Continuar'),
+                      ),
+                    ],
+                  ),
                 );
 
                 if (confirmed == true) {
-                  final updated = await Navigator.push<bool>(
+                  final result = await Navigator.push<ClientEditResult>(
                     context,
                     MaterialPageRoute(
                       builder: (_) => ClientEditPage(client: client),
                     ),
                   );
 
-                  if (updated == true && mounted) {
-                    await _reloadClient();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Cliente atualizado com sucesso'),
-                      ),
-                    );
+                  if (!mounted || result == null) return;
+
+                  switch (result) {
+                    case ClientEditResult.updated:
+                      await _reloadClient();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Cliente atualizado com sucesso'),
+                        ),
+                      );
+                      break;
+
+                    case ClientEditResult.deleted:
+                      Navigator.pop(context, ClientEditResult.deleted);
+                      break;
                   }
                 }
               },
@@ -224,10 +230,7 @@ class _ClientPageState extends State<ClientPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final screenWidth = MediaQuery
-            .of(context)
-            .size
-            .width;
+        final screenWidth = MediaQuery.of(context).size.width;
         final maxWidth = screenWidth * 0.9;
 
         return Center(
@@ -239,9 +242,7 @@ class _ClientPageState extends State<ClientPage> {
               margin: const EdgeInsets.only(bottom: 16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme
-                    .of(context)
-                    .scaffoldBackgroundColor,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -270,8 +271,7 @@ class _ClientPageState extends State<ClientPage> {
                       title: Text(phone),
                       trailing: PopupMenuButton<String>(
                         onSelected: (value) => _handlePhoneAction(value, phone),
-                        itemBuilder: (_) =>
-                        const [
+                        itemBuilder: (_) => const [
                           PopupMenuItem(
                             value: 'copy',
                             child: Text('Copiar número'),
@@ -328,7 +328,6 @@ class _ClientPageState extends State<ClientPage> {
     }
   }
 
-
   Widget _line(String label, double value, {bool bold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -360,5 +359,4 @@ class _ClientPageState extends State<ClientPage> {
       _client = updated;
     });
   }
-
 }
