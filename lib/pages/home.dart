@@ -8,6 +8,7 @@ import '../config/app_config.dart';
 import '../tools/formatters.dart';
 import '../services/finance_service.dart';
 import 'client_page.dart';
+import 'new_client_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final String _status;
+  late Future<List<Client>> _clientsFuture;
 
   final FinanceService _financeService = FinanceService();
   final ClientService _clientService = ClientService();
@@ -29,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _status = 'UID ativo: ${AppConfig.fixedUid}';
+    _clientsFuture = _clientService.getClients();
   }
 
   @override
@@ -103,7 +106,7 @@ class _HomePageState extends State<HomePage> {
           // --- Lista de clientes ---
           Expanded(
             child: FutureBuilder<List<Client>>(
-              future: _clientService.getClients(),
+              future: _clientsFuture,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
@@ -125,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                     return ListTile(
                       leading: const CircleAvatar(child: Icon(Icons.person)),
                       title: Text(client.name),
-                      subtitle: Text(client.cpf),
+                      subtitle: Text('CPF: ${client.formattedCpf}'),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -152,7 +155,20 @@ class _HomePageState extends State<HomePage> {
                   'Novo cliente',
                   style: TextStyle(fontSize: 18),
                 ),
-                onPressed: () {},
+                onPressed: () async {
+                  final created = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const NewClientPage()),
+                  );
+
+                  setState(() {
+                    _clientsFuture = _clientService.getClients();
+                  });
+
+                  if (created == true) {
+                    setState(() {}); // força rebuild e recarrega a lista
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                   foregroundColor: Colors.white,
@@ -177,14 +193,14 @@ class _HomePageState extends State<HomePage> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           suffixIcon: _search.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {
-                      _search = '';
-                    });
-                  },
-                )
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              _searchController.clear();
+              setState(() {
+                _search = '';
+              });
+            },
+          )
               : null,
         ),
         onChanged: (value) {

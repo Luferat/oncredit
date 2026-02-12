@@ -44,7 +44,7 @@ class ClientPage extends StatelessWidget {
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
-            Text('CPF: ${client.cpf}'),
+            Text('CPF: ${client.formattedCpf}'),
             const SizedBox(height: 16),
 
             // Aqui depois entra o resumo financeiro do cliente
