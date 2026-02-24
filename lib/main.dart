@@ -1,10 +1,20 @@
-// lib\main.dart
+// lib/main.dart
 
 import 'package:flutter/material.dart';
 import 'package:oncredit/pages/home.dart';
 import 'package:oncredit/pages/settings.dart';
+import 'package:oncredit/theme/theme_controller.dart';
+import 'config/app_config.dart';
 
-void main() {
+late ThemeController themeController;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppConfig.load();
+
+  themeController = ThemeController(); // ← aqui usa a global
+  await themeController.loadTheme();
+
   runApp(const MyApp());
 }
 
@@ -13,23 +23,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'OnCredit',
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-        primarySwatch: Colors.deepPurple,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return AnimatedBuilder(
+      animation: themeController,
+      builder: (_, __) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        themeMode: themeController.themeMode,
+        theme: ThemeData(
+          brightness: Brightness.light,
+          primarySwatch: Colors.deepPurple,
+          useMaterial3: true,
+        ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          colorSchemeSeed: Colors.deepPurple,
+          useMaterial3: true,
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const HomePage(),
+          '/settings': (context) => const SettingsPage(),
+        },
       ),
-
-      initialRoute: '/',
-
-      routes: {
-        // Página inicial
-        '/': (context) => const HomePage(),
-        // Configurações
-        '/settings': (context) => const SettingsPage(),
-      },
     );
   }
 }

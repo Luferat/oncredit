@@ -3,7 +3,7 @@
 name: oncredit
 description: "Aplicativo Dart & Flutter para controle de pagamentos fiados."
 publish_to: 'none'
-version: 2026.01.30
+version: 2026.02.24
 
 environment:
   sdk: ^3.10.3
@@ -17,6 +17,8 @@ dependencies:
   intl: ^0.19.0
   mask_text_input_formatter: ^2.5.0
   url_launcher: ^6.2.5
+  shared_preferences: ^2.2.2
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:
