@@ -205,7 +205,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: const Icon(Icons.cloud),
                   title: const Text('Ambiente'),
                   trailing: Chip(
-                    label: Text(AppConfig.environment),
+                    label: Text(AppConfig.environment, style: TextStyle( color: Colors.black),),
                     backgroundColor: AppConfig.environment == 'DEV'
                         ? Colors.orange.shade200
                         : Colors.green.shade200,
