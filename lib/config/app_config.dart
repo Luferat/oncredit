@@ -12,21 +12,6 @@ class AppConfig {
   static String fixedUid = 'dev_uid_001';
   static String baseUrl = 'https://jsbpad-default-rtdb.firebaseio.com';
 
-  static Future<void> load() async {
-    final prefs = await SharedPreferences.getInstance();
-    fixedUid = prefs.getString('fixedUid') ?? fixedUid;
-    baseUrl = prefs.getString('baseUrl') ?? baseUrl;
-  }
-
-  static Future<void> save(String uid, String url) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('fixedUid', uid);
-    await prefs.setString('baseUrl', url);
-
-    fixedUid = uid;
-    baseUrl = url;
-  }
-
   // Informações "sobre" o aplicativo
   // Usadas principalmente em '/settings'
   static Map<String, String> about = {
@@ -55,4 +40,19 @@ O aviso de direitos autorais acima e este aviso de permissão devem ser incluíd
 O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU IMPLÍCITA, INCLUINDO, MAS NÃO SE LIMITANDO ÀS GARANTIAS DE COMERCIALIZAÇÃO, ADEQUAÇÃO A UM FIM ESPECÍFICO E NÃO VIOLAÇÃO. EM NENHUMA CIRCUNSTÂNCIA OS AUTORES OU DETENTORES DOS DIREITOS AUTORAIS SERÃO RESPONSÁVEIS POR QUAISQUER REIVINDICAÇÕES, DANOS OU OUTRAS RESPONSABILIDADES, SEJA EM AÇÃO CONTRATUAL, EXTRACONTRATUAL OU DE OUTRA NATUREZA, DECORRENTES DE, OU RELACIONADAS COM, O SOFTWARE OU O USO OU OUTRAS NEGOCIAÇÕES COM O SOFTWARE.
     ''',
   };
+
+  static Future<void> load() async {
+    final prefs = await SharedPreferences.getInstance();
+    fixedUid = prefs.getString('fixedUid') ?? fixedUid;
+    baseUrl = prefs.getString('baseUrl') ?? baseUrl;
+  }
+
+  static Future<void> save(String uid, String url) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('fixedUid', uid);
+    await prefs.setString('baseUrl', url);
+
+    fixedUid = uid;
+    baseUrl = url;
+  }
 }

@@ -205,7 +205,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: const Icon(Icons.cloud),
                   title: const Text('Ambiente'),
                   trailing: Chip(
-                    label: Text(AppConfig.environment, style: TextStyle( color: Colors.black),),
+                    label: Text(
+                      AppConfig.environment,
+                      style: TextStyle(color: Colors.black),
+                    ),
                     backgroundColor: AppConfig.environment == 'DEV'
                         ? Colors.orange.shade200
                         : Colors.green.shade200,
@@ -391,7 +394,9 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Resetar configurações'),
-        content: const Text('Isso apagará configurações locais e tema.\n\nContinuar?',),
+        content: const Text(
+          'Isso apagará configurações locais e tema.\n\nContinuar?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
