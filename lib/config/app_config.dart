@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AppConfig {
   // 'DEV' para tempo de desenvolvimento
   // 'PROD' para criar o build de deploy
-  static const String environment = 'DEV'; // ou PROD
+  static const String environment = 'PROD'; // ou PROD
 
   // PERIGO! ATENÇÃO! CUIDADO!
   // Configurações de acesso à API
