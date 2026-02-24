@@ -205,7 +205,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: const Icon(Icons.cloud),
                   title: const Text('Ambiente'),
                   trailing: Chip(
-                    label: Text(AppConfig.environment),
+                    label: Text(
+                      AppConfig.environment,
+                      style: TextStyle(color: Colors.black),
+                    ),
                     backgroundColor: AppConfig.environment == 'DEV'
                         ? Colors.orange.shade200
                         : Colors.green.shade200,
@@ -242,7 +245,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                 ListTile(
                   leading: const Icon(Icons.edit_document),
-                  title: const Text('Licença MIT'),
+                  title: Text('Licença: ${AppConfig.about['licenseName']}'),
                   trailing: const Icon(Icons.visibility),
                   onTap: _showLicenseDialog,
                 ),
@@ -260,9 +263,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
                 AboutListTile(
                   icon: const Icon(Icons.info),
-                  applicationName: 'ONCredit',
+                  applicationName: AppConfig.about['appName'],
                   applicationVersion: _appVersion,
-                  applicationLegalese: '© 2026 André Luferat / ONCredit',
+                  applicationLegalese: AppConfig.about['app'],
                 ),
               ],
             ),
@@ -326,25 +329,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  static const String _mitLicenseText = '''
-MIT License
-
-Copyright (c) 2026 André Luferat / ONCredit
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-____ Tradução PT-BR não oficial ____
-
-É concedida permissão, gratuitamente, a qualquer pessoa que obtenha uma cópia deste software e da documentação associada (o "Software"), para lidar com o Software sem restrições, incluindo, sem limitação, os direitos de usar, copiar, modificar, fundir, publicar, distribuir, sublicenciar e/ou vender cópias do Software, e para permitir que as pessoas a quem o Software for fornecido o façam, sujeitas às seguintes condições:
-
-O aviso de direitos autorais acima e este aviso de permissão devem ser incluídos em todas as cópias ou partes substanciais do Software.
-
-O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU IMPLÍCITA, INCLUINDO, MAS NÃO SE LIMITANDO ÀS GARANTIAS DE COMERCIALIZAÇÃO, ADEQUAÇÃO A UM FIM ESPECÍFICO E NÃO VIOLAÇÃO. EM NENHUMA CIRCUNSTÂNCIA OS AUTORES OU DETENTORES DOS DIREITOS AUTORAIS SERÃO RESPONSÁVEIS POR QUAISQUER REIVINDICAÇÕES, DANOS OU OUTRAS RESPONSABILIDADES, SEJA EM AÇÃO CONTRATUAL, EXTRACONTRATUAL OU DE OUTRA NATUREZA, DECORRENTES DE, OU RELACIONADAS COM, O SOFTWARE OU O USO OU OUTRAS NEGOCIAÇÕES COM O SOFTWARE.
-''';
+  static final String? _licenseText = AppConfig.about['licenseText'];
 
   void _showLicenseDialog() {
     showDialog(
@@ -356,13 +341,13 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const Text(
-                  'MIT License',
+                Text(
+                  AppConfig.about['licenseName']!,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 Expanded(
-                  child: SingleChildScrollView(child: Text(_mitLicenseText)),
+                  child: SingleChildScrollView(child: Text(_licenseText!)),
                 ),
                 const SizedBox(height: 12),
                 Align(
@@ -395,12 +380,12 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
   }
 
   Future<void> _openRepository() async {
-    final uri = Uri.parse('https://github.com/Luferat/oncredit');
+    final uri = Uri.parse(AppConfig.about['codeRepository']!);
     await launchUrl(uri);
   }
 
   Future<void> _openSupport() async {
-    final uri = Uri.parse('https://lufer.click/contato');
+    final uri = Uri.parse(AppConfig.about['supportLink']!);
     await launchUrl(uri);
   }
 
