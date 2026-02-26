@@ -160,7 +160,7 @@ class _ClientPageState extends State<ClientPage> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomActions(context),
+      bottomNavigationBar: SafeArea(child: _buildBottomActions(context),),
     );
   }
 

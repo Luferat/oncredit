@@ -115,17 +115,19 @@ class _ClientEditPageState extends State<ClientEditPage> {
           ),
         ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: ElevatedButton.icon(
-          icon: const Icon(Icons.delete),
-          label: const Text('Apagar Cliente'),
-          onPressed: _deleteClient,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            textStyle: const TextStyle(fontSize: 18),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.delete),
+            label: const Text('Apagar Cliente'),
+            onPressed: _deleteClient,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              textStyle: const TextStyle(fontSize: 18),
+            ),
           ),
         ),
       ),
@@ -146,8 +148,8 @@ class _ClientEditPageState extends State<ClientEditPage> {
           children: [
             Text(
               'Tem certeza que deseja apagar ${widget.client.name}?\n\n'
-                  'Essa ação apagará todo o histórico financeiro.\n\n'
-                  'Digite APAGAR para confirmar.',
+              'Essa ação apagará todo o histórico financeiro.\n\n'
+              'Digite APAGAR para confirmar.',
             ),
             const SizedBox(height: 12),
             TextField(controller: controller),
