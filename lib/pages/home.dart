@@ -158,7 +158,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          Padding(
+        SafeArea(
+          top: false,
+          child: Padding(
             padding: const EdgeInsets.all(16),
             child: SizedBox(
               width: double.infinity,
@@ -190,6 +192,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+    ),
         ],
       ),
     );
