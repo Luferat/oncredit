@@ -415,10 +415,16 @@ class _SettingsPageState extends State<SettingsPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
 
+    // 🔥 RECARREGA CONFIGURAÇÕES
+    await AppConfig.load();
+    await themeController.loadTheme();
+
     if (!mounted) return;
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Configurações resetadas')));
+    setState(() {}); // força rebuild da tela
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Configurações resetadas')),
+    );
   }
 }
