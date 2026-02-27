@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:oncredit/templates/appbar.dart';
+
 import '../models/purchase.dart';
 import '../services/finance_service.dart';
 import '../tools/formatters.dart';
@@ -21,10 +22,29 @@ class _NewPurchasePageState extends State<NewPurchasePage> {
   final _descriptionController = TextEditingController();
   final _quantityController = TextEditingController(text: '1');
   final _unitValueController = TextEditingController();
+  final FocusNode _descriptionFocus = FocusNode();
 
   DateTime _date = DateTime.now();
   double _totalValue = 0.0;
   bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusDescription();
+    });
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    _quantityController.dispose();
+    _unitValueController.dispose();
+    _descriptionFocus.dispose();
+    super.dispose();
+  }
 
   void _recalculateTotal() {
     final quantity = int.tryParse(_quantityController.text) ?? 0;
@@ -48,27 +68,26 @@ class _NewPurchasePageState extends State<NewPurchasePage> {
     }
   }
 
-  Future<void> _save() async {
+  Future<void> _saveAndContinue() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _saving = true);
 
-    final quantity = int.parse(_quantityController.text);
-    final unitValue = Formatters.parseCurrency(_unitValueController.text);
-
-    final purchase = Purchase(
-      clientId: widget.clientId,
-      description: _descriptionController.text.trim(),
-      quantity: quantity,
-      unitValue: unitValue,
-      totalValue: quantity * unitValue,
-      date: _date,
-    );
-
-    await FinanceService().registerPurchase(purchase);
+    await _savePurchase();
 
     if (!mounted) return;
-    Navigator.pop(context, true);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Compra registrada com sucesso!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    _clearForm();
+    setState(() => _saving = false);
+
+    _focusDescription();
   }
 
   @override
@@ -94,10 +113,11 @@ class _NewPurchasePageState extends State<NewPurchasePage> {
                 children: [
                   TextFormField(
                     controller: _descriptionController,
-                    decoration:
-                    const InputDecoration(labelText: 'Descrição'),
+                    textInputAction: TextInputAction.next,
+                    focusNode: _descriptionFocus,
+                    decoration: const InputDecoration(labelText: 'Descrição'),
                     validator: (v) =>
-                    v == null || v.isEmpty ? 'Informe a descrição' : null,
+                        v == null || v.isEmpty ? 'Informe a descrição' : null,
                   ),
 
                   const SizedBox(height: 12),
@@ -108,9 +128,11 @@ class _NewPurchasePageState extends State<NewPurchasePage> {
                         child: TextFormField(
                           controller: _quantityController,
                           keyboardType: TextInputType.number,
-                          decoration:
-                          const InputDecoration(labelText: 'Quantidade'),
+                          decoration: const InputDecoration(
+                            labelText: 'Quantidade',
+                          ),
                           onChanged: (_) => _recalculateTotal(),
+                          onFieldSubmitted: (_) => _recalculateTotal(),
                           validator: (v) {
                             final q = int.tryParse(v ?? '');
                             return q == null || q <= 0
@@ -132,7 +154,7 @@ class _NewPurchasePageState extends State<NewPurchasePage> {
                           ),
                           onChanged: (_) => _recalculateTotal(),
                           validator: (v) =>
-                          v == null || v.isEmpty ? 'Informe o valor' : null,
+                              v == null || v.isEmpty ? 'Informe o valor' : null,
                         ),
                       ),
                     ],
@@ -143,9 +165,7 @@ class _NewPurchasePageState extends State<NewPurchasePage> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.calendar_today),
-                    title: Text(
-                      Formatters.dateFormat.format(_date),
-                    ),
+                    title: Text(Formatters.dateFormat.format(_date)),
                     onTap: _pickDate,
                   ),
 
@@ -154,10 +174,7 @@ class _NewPurchasePageState extends State<NewPurchasePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Total',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                      const Text('Total', style: TextStyle(fontSize: 18)),
                       Text(
                         Formatters.currencyFormat.format(_totalValue),
                         style: const TextStyle(
@@ -172,18 +189,42 @@ class _NewPurchasePageState extends State<NewPurchasePage> {
 
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.save),
-                      label: const Text(
-                        'Salvar compra',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      onPressed: _saving ? null : _save,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.save),
+                            label: const Text(
+                              'Salvar compra',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            onPressed: _saving ? null : _saveAndContinue,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.arrow_back),
+                            label: const Text(
+                              'Voltar ao cliente',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            onPressed: _saving ? null : _backToClient,
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -193,5 +234,40 @@ class _NewPurchasePageState extends State<NewPurchasePage> {
         ],
       ),
     );
+  }
+
+  void _clearForm() {
+    _descriptionController.clear();
+    _quantityController.text = '1';
+    _unitValueController.clear();
+    _date = DateTime.now();
+
+    setState(() {
+      _totalValue = 0.0;
+    });
+  }
+
+  Future<void> _savePurchase() async {
+    final quantity = int.parse(_quantityController.text);
+    final unitValue = Formatters.parseCurrency(_unitValueController.text);
+
+    final purchase = Purchase(
+      clientId: widget.clientId,
+      description: _descriptionController.text.trim(),
+      quantity: quantity,
+      unitValue: unitValue,
+      totalValue: quantity * unitValue,
+      date: _date,
+    );
+
+    await FinanceService().registerPurchase(purchase);
+  }
+
+  void _backToClient() {
+    Navigator.pop(context, true);
+  }
+
+  void _focusDescription() {
+    FocusScope.of(context).requestFocus(_descriptionFocus);
   }
 }
