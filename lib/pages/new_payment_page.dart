@@ -21,9 +21,26 @@ class _NewPaymentPageState extends State<NewPaymentPage> {
 
   final _valueController = TextEditingController();
   String _method = 'Dinheiro';
+  final FocusNode _valueFocus = FocusNode();
 
   DateTime _date = DateTime.now();
   bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(_valueFocus);
+    });
+  }
+
+  @override
+  void dispose() {
+    _valueController.dispose();
+    _valueFocus.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickDate() async {
     final result = await showDatePicker(
@@ -81,7 +98,9 @@ class _NewPaymentPageState extends State<NewPaymentPage> {
                 children: [
                   TextFormField(
                     controller: _valueController,
+                    focusNode: _valueFocus,
                     keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.done,
                     inputFormatters: [Formatters.currencyInput],
                     decoration: const InputDecoration(
                       labelText: 'Valor do pagamento',
@@ -98,11 +117,20 @@ class _NewPaymentPageState extends State<NewPaymentPage> {
                       labelText: 'Forma de pagamento',
                     ),
                     items: const [
-                      DropdownMenuItem(value: 'Dinheiro', child: Text('Dinheiro'),),
-                      DropdownMenuItem(value: 'PIX', child: Text('PIX'),),
-                      DropdownMenuItem(value: 'Débito', child: Text('Débito'),),
-                      DropdownMenuItem(value: 'Crédito', child: Text('Crédito'),),
-                      DropdownMenuItem(value: 'Transferência', child: Text('Transferência'),),
+                      DropdownMenuItem(
+                        value: 'Dinheiro',
+                        child: Text('Dinheiro'),
+                      ),
+                      DropdownMenuItem(value: 'PIX', child: Text('PIX')),
+                      DropdownMenuItem(value: 'Débito', child: Text('Débito')),
+                      DropdownMenuItem(
+                        value: 'Crédito',
+                        child: Text('Crédito'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Transferência',
+                        child: Text('Transferência'),
+                      ),
                     ],
                     onChanged: (v) => setState(() => _method = v!),
                   ),
