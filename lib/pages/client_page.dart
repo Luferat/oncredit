@@ -1,6 +1,7 @@
 // lib/pages/client_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/client.dart';
 import '../services/client_service.dart';
 import '../templates/appbar.dart';
@@ -10,7 +11,7 @@ import '../tools/formatters.dart';
 import 'client_edit_page.dart';
 import 'client_history_page.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 
 import 'new_payment_page.dart';
 import 'new_purchase_page.dart';
@@ -334,24 +335,24 @@ class _ClientPageState extends State<ClientPage> {
   Future<void> _handlePhoneAction(String action, String phone) async {
     final number = onlyNumbers(phone);
 
-    switch (action) {
-      case 'copy':
-        await Clipboard.setData(ClipboardData(text: number));
-        break;
+    try {
+      switch (action) {
+        case 'copy':
+          await Clipboard.setData(ClipboardData(text: number));
+          break;
 
-      case 'call':
-        final uri = Uri.parse('tel:$number');
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri);
-        }
-        break;
-
-      case 'whatsapp':
-        final uri = Uri.parse('https://wa.me/55$number');
-        if (await canLaunchUrl(uri)) {
+        case 'call':
+          final uri = Uri(scheme: 'tel', path: number);
           await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
-        break;
+          break;
+
+        case 'whatsapp':
+          final uri = Uri.parse('https://wa.me/55$number');
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          break;
+      }
+    } catch (e) {
+      debugPrint('Launch error: $e');
     }
   }
 
