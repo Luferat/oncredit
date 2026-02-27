@@ -116,9 +116,17 @@ class _ClientListPageState extends State<ClientListPage> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final clients = snapshot.data!
-                    .where((c) => c.name.toLowerCase().contains(_search))
-                    .toList();
+                final query = _search.trim().toLowerCase();
+                final numericQuery = query.replaceAll(RegExp(r'\D'), '');
+
+                final clients = snapshot.data!.where((c) {
+                  final nameMatch = c.name.toLowerCase().contains(query);
+
+                  final cpfMatch =
+                      numericQuery.isNotEmpty && c.cpf.contains(numericQuery);
+
+                  return nameMatch || cpfMatch;
+                }).toList();
 
                 if (clients.isEmpty) {
                   return const Center(child: Text('Nenhum cliente encontrado'));
