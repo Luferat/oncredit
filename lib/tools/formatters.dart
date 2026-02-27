@@ -39,4 +39,24 @@ class Formatters {
 
     return double.tryParse(clean) ?? 0.0;
   }
+
+  static String formatPhone(String value) {
+    final numbers = value.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (numbers.length == 11) {
+      // celular: 11987654321 → (11) 98765-4321
+      return '(${numbers.substring(0, 2)}) '
+          '${numbers.substring(2, 7)}-'
+          '${numbers.substring(7)}';
+    }
+
+    if (numbers.length == 10) {
+      // fixo: 1132654321 → (11) 3265-4321
+      return '(${numbers.substring(0, 2)}) '
+          '${numbers.substring(2, 6)}-'
+          '${numbers.substring(6)}';
+    }
+
+    return value; // fallback
+  }
 }

@@ -12,7 +12,6 @@ import 'client_edit_page.dart';
 import 'client_history_page.dart';
 import 'package:flutter/services.dart';
 
-
 import 'new_payment_page.dart';
 import 'new_purchase_page.dart';
 
@@ -162,7 +161,7 @@ class _ClientPageState extends State<ClientPage> {
           ],
         ),
       ),
-      bottomNavigationBar: SafeArea(child: _buildBottomActions(context),),
+      bottomNavigationBar: SafeArea(child: _buildBottomActions(context)),
     );
   }
 
@@ -295,8 +294,9 @@ class _ClientPageState extends State<ClientPage> {
 
                   ...phones.map((phone) {
                     return ListTile(
-                      leading: const Icon(Icons.phone),
-                      title: Text(phone),
+                      leading: const Icon(Icons.phone_android),
+                      title: Text(Formatters.formatPhone(phone)),
+                      subtitle: Text('Toque no menu para ações'),
                       trailing: PopupMenuButton<String>(
                         onSelected: (value) => _handlePhoneAction(value, phone),
                         itemBuilder: (_) => const [
