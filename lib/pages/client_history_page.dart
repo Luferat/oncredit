@@ -5,6 +5,7 @@ import '../models/client.dart';
 import '../models/financial_event.dart';
 import '../services/finance_service.dart';
 import '../templates/appbar.dart';
+import '../theme/theme_extensions.dart';
 import '../tools/formatters.dart';
 
 class ClientHistoryPage extends StatelessWidget {
@@ -107,17 +108,18 @@ class ClientHistoryPage extends StatelessWidget {
 
                   return Card(
                     margin: const EdgeInsets.only(top: 16),
-                    color: Colors.deepPurple.shade50,
+                    color: context.colors.primaryContainer,
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Resumo do período',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
+                              color: context.colors.onPrimaryContainer,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -127,7 +129,7 @@ class ClientHistoryPage extends StatelessWidget {
                             summary['purchases']!,
                           ),
                           _summaryLine('Total pago', summary['payments']!),
-                          const Divider(),
+                          const Divider(color: Colors.grey),
                           _summaryLine(
                             'Débito atual',
                             summary['balance']!,

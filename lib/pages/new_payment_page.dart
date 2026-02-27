@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:oncredit/templates/appbar.dart';
 import '../models/payment.dart';
 import '../services/finance_service.dart';
+import '../theme/theme_extensions.dart';
 import '../tools/formatters.dart';
 
 class NewPaymentPage extends StatefulWidget {
@@ -127,8 +128,8 @@ class _NewPaymentPageState extends State<NewPaymentPage> {
                       ),
                       onPressed: _saving ? null : _save,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                        foregroundColor: Colors.white,
+                        backgroundColor: context.colors.onPrimary,
+                        foregroundColor: context.colors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ),

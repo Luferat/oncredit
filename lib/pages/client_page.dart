@@ -5,6 +5,7 @@ import '../models/client.dart';
 import '../services/client_service.dart';
 import '../templates/appbar.dart';
 import '../services/finance_service.dart';
+import '../theme/theme_extensions.dart';
 import '../tools/formatters.dart';
 import 'client_edit_page.dart';
 import 'client_history_page.dart';
@@ -143,8 +144,8 @@ class _ClientPageState extends State<ClientPage> {
                   style: TextStyle(fontSize: 18),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  foregroundColor: Colors.white,
+                  backgroundColor: context.colors.onPrimary,
+                  foregroundColor: context.colors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: () {
@@ -179,8 +180,8 @@ class _ClientPageState extends State<ClientPage> {
                   ? null
                   : _showContactsBottomSheet,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                foregroundColor: Colors.white,
+                backgroundColor: context.colors.onPrimary,
+                foregroundColor: context.colors.primary,
               ),
             ),
           ),

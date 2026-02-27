@@ -91,9 +91,12 @@ class FinanceService {
 
     for (final p in purchases.values) {
       if (p['clientId'] == clientId) {
+        final description = p['description'] as String? ?? '';
+        final quantity = (p['quantity'] as num?)?.toInt() ?? 0;
+
         history.add(
           FinancialEvent(
-            description: 'Compra',
+            description: '$quantity x $description',
             value: (p['totalValue'] as num).toDouble(),
             date: DateTime.parse(p['date']),
             type: FinancialEventType.purchase,

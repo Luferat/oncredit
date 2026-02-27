@@ -8,7 +8,7 @@ class AppTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentRoute = ModalRoute.of(context)?.settings.name;
-    final isHome = currentRoute == '/';
+    final isHome = currentRoute == '/clients';
 
     return InkWell(
       borderRadius: BorderRadius.circular(8),
@@ -21,7 +21,7 @@ class AppTitle extends StatelessWidget {
           : () {
               Navigator.of(
                 context,
-              ).pushNamedAndRemoveUntil('/', (route) => false);
+              ).pushNamedAndRemoveUntil('/clients', (route) => false);
             },
 
       child: Row(

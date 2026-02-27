@@ -1,9 +1,11 @@
 // lib/main.dart
 
 import 'package:flutter/material.dart';
+import 'package:oncredit/pages/client_list.dart';
 import 'package:oncredit/pages/home.dart';
 import 'package:oncredit/pages/settings.dart';
 import 'package:oncredit/theme/theme_controller.dart';
+import 'package:oncredit/theme/theme_extensions.dart';
 import 'config/app_config.dart';
 
 late ThemeController themeController;
@@ -32,6 +34,12 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
           primarySwatch: Colors.deepPurple,
           useMaterial3: true,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.colors.primary,
+              foregroundColor: context.colors.onPrimary,
+            ),
+          ),
         ),
         darkTheme: ThemeData(
           brightness: Brightness.dark,
@@ -42,6 +50,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const HomePage(),
           '/settings': (context) => const SettingsPage(),
+          '/clients': (context) => const ClientListPage(),
         },
       ),
     );

@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
 import '../templates/appbar.dart';
 import '../config/app_config.dart';
+import '../theme/theme_extensions.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -161,170 +162,178 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        children: [
-          _sectionTitle('Aparência'),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          children: [
+            _sectionTitle('Aparência'),
 
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: AnimatedBuilder(
-              animation: themeController,
-              builder: (_, __) => SwitchListTile(
-                secondary: const Icon(Icons.dark_mode),
-                title: const Text('Modo Escuro'),
-                subtitle: const Text('Alternar entre tema claro e escuro'),
-                value: themeController.isDarkMode,
-                onChanged: (value) async {
-                  await themeController.toggleTheme(value);
-                },
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: AnimatedBuilder(
+                animation: themeController,
+                builder: (_, __) => SwitchListTile(
+                  secondary: const Icon(Icons.dark_mode),
+                  title: const Text('Modo Escuro'),
+                  subtitle: const Text('Alternar entre tema claro e escuro'),
+                  value: themeController.isDarkMode,
+                  onChanged: (value) async {
+                    await themeController.toggleTheme(value);
+                  },
+                ),
               ),
             ),
-          ),
 
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          _sectionTitle('Sistema'),
+            _sectionTitle('Sistema'),
 
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: const Text('Versão'),
-                  trailing: Text(
-                    _appVersion,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-
-                const Divider(height: 1),
-
-                ListTile(
-                  leading: const Icon(Icons.cloud),
-                  title: const Text('Ambiente'),
-                  trailing: Chip(
-                    label: Text(
-                      AppConfig.environment,
-                      style: TextStyle(color: Colors.black),
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.info_outline),
+                    title: const Text('Versão'),
+                    trailing: Text(
+                      _appVersion,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    backgroundColor: AppConfig.environment == 'DEV'
-                        ? Colors.orange.shade200
-                        : Colors.green.shade200,
                   ),
-                ),
 
-                const Divider(height: 1),
+                  const Divider(height: 1),
 
-                ListTile(
-                  leading: const Icon(Icons.phone_android),
-                  title: const Text('Plataforma'),
-                  subtitle: Text(Theme.of(context).platform.name.toUpperCase()),
-                ),
-              ],
-            ),
-          ),
+                  ListTile(
+                    leading: const Icon(Icons.cloud),
+                    title: const Text('Ambiente'),
+                    trailing: Chip(
+                      label: Text(
+                        AppConfig.environment,
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      backgroundColor: AppConfig.environment == 'DEV'
+                          ? Colors.orange.shade200
+                          : Colors.green.shade200,
+                    ),
+                  ),
 
-          const SizedBox(height: 24),
+                  const Divider(height: 1),
 
-          _sectionTitle('Projeto'),
-
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.code),
-                  title: const Text('Repositório'),
-                  trailing: const Icon(Icons.open_in_new),
-                  onTap: _openRepository,
-                ),
-
-                const Divider(height: 1),
-
-                ListTile(
-                  leading: const Icon(Icons.edit_document),
-                  title: Text('Licença: ${AppConfig.about['licenseName']}'),
-                  trailing: const Icon(Icons.visibility),
-                  onTap: _showLicenseDialog,
-                ),
-
-                const Divider(height: 1),
-
-                ListTile(
-                  leading: const Icon(Icons.handyman),
-                  title: const Text('Suporte técnico'),
-                  trailing: const Icon(Icons.open_in_new),
-                  onTap: _openSupport,
-                ),
-
-                const Divider(height: 1),
-
-                AboutListTile(
-                  icon: const Icon(Icons.info),
-                  applicationName: AppConfig.about['appName'],
-                  applicationVersion: _appVersion,
-                  applicationLegalese: AppConfig.about['app'],
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          _sectionTitle('Administração'),
-
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text('UID Atual'),
-                  subtitle: Text(AppConfig.fixedUid),
-                ),
-
-                const Divider(height: 1),
-
-                ListTile(
-                  leading: const Icon(Icons.link),
-                  title: const Text('Base URL'),
-                  subtitle: Text(AppConfig.baseUrl),
-                ),
-
-                const Divider(height: 1),
-
-                ListTile(
-                  leading: const Icon(Icons.cleaning_services),
-                  title: const Text('Resetar Configurações Locais'),
-                  subtitle: const Text('Limpa preferências salvas'),
-                  onTap: _resetLocalSettings,
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          _sectionTitle('Zona de Risco', color: Colors.red),
-
-          Card(
-            color: Colors.red.shade50,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: ListTile(
-              leading: const Icon(Icons.warning, color: Colors.red),
-              title: const Text(
-                'Editar Configurações Críticas',
-                style: TextStyle(color: Colors.red),
+                  ListTile(
+                    leading: const Icon(Icons.phone_android),
+                    title: const Text('Plataforma'),
+                    subtitle: Text(
+                      Theme.of(context).platform.name.toUpperCase(),
+                    ),
+                  ),
+                ],
               ),
-              subtitle: const Text('Pode comprometer o funcionamento do app'),
-              onTap: _editCriticalSettings,
             ),
-          ),
 
-          const SizedBox(height: 40),
-        ],
+            const SizedBox(height: 24),
+
+            _sectionTitle('Projeto'),
+
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.code),
+                    title: const Text('Repositório'),
+                    trailing: const Icon(Icons.open_in_new),
+                    onTap: _openRepository,
+                  ),
+
+                  const Divider(height: 1),
+
+                  ListTile(
+                    leading: const Icon(Icons.edit_document),
+                    title: Text('Licença: ${AppConfig.about['licenseName']}'),
+                    trailing: const Icon(Icons.visibility),
+                    onTap: _showLicenseDialog,
+                  ),
+
+                  const Divider(height: 1),
+
+                  ListTile(
+                    leading: const Icon(Icons.handyman),
+                    title: const Text('Suporte técnico'),
+                    trailing: const Icon(Icons.open_in_new),
+                    onTap: _openSupport,
+                  ),
+
+                  const Divider(height: 1),
+
+                  AboutListTile(
+                    icon: const Icon(Icons.info),
+                    applicationName: AppConfig.about['appName'],
+                    applicationVersion: _appVersion,
+                    applicationLegalese: AppConfig.about['app'],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            _sectionTitle('Administração'),
+
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.person),
+                    title: const Text('UID Atual'),
+                    subtitle: Text(AppConfig.fixedUid),
+                  ),
+
+                  const Divider(height: 1),
+
+                  ListTile(
+                    leading: const Icon(Icons.link),
+                    title: const Text('Base URL'),
+                    subtitle: Text(AppConfig.baseUrl),
+                  ),
+
+                  const Divider(height: 1),
+
+                  ListTile(
+                    leading: const Icon(Icons.cleaning_services),
+                    title: const Text('Resetar Configurações Locais'),
+                    subtitle: const Text('Limpa preferências salvas'),
+                    onTap: _resetLocalSettings,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            _sectionTitle('Zona de Risco', color: Colors.red),
+
+
+            Card(
+              color: context.colors.errorContainer,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListTile(
+                leading: Icon(Icons.warning, color: context.colors.onErrorContainer),
+                title: Text(
+                  'Editar Configurações Críticas',
+                  style: TextStyle(color: context.colors.onErrorContainer),
+                ),
+                subtitle: Text(
+                  'Pode comprometer o funcionamento do app',
+                  style: TextStyle(color: context.colors.onErrorContainer),
+                ),
+                onTap: _editCriticalSettings,
+              ),
+            ),
+
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
@@ -423,8 +432,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
     setState(() {}); // força rebuild da tela
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Configurações resetadas')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Configurações resetadas')));
   }
 }
