@@ -40,6 +40,7 @@ class _NewClientPageState extends State<NewClientPage> {
       phones: _phones.map((c) => c.text).toList(),
     );
 
+    if (!mounted) return;
     Navigator.pop(context, true);
   }
 

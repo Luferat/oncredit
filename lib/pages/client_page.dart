@@ -68,7 +68,7 @@ class _ClientPageState extends State<ClientPage> {
                     builder: (_) => NewPurchasePage(clientId: client.id),
                   ),
                 );
-
+                if (!mounted) return;
                 if (result == true) {
                   setState(() {}); // recarrega resumo financeiro
                 }
@@ -191,6 +191,8 @@ class _ClientPageState extends State<ClientPage> {
               icon: const Icon(Icons.edit),
               label: const Text('Editar'),
               onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                final navigator = Navigator.of(context);
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (_) => AlertDialog(
@@ -212,8 +214,8 @@ class _ClientPageState extends State<ClientPage> {
                 );
 
                 if (confirmed == true) {
-                  final result = await Navigator.push<ClientEditResult>(
-                    context,
+                  final result = await navigator.push<ClientEditResult>(
+                    // ← usa navigator
                     MaterialPageRoute(
                       builder: (_) => ClientEditPage(client: client),
                     ),
@@ -224,7 +226,8 @@ class _ClientPageState extends State<ClientPage> {
                   switch (result) {
                     case ClientEditResult.updated:
                       await _reloadClient();
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      if (!mounted) return;
+                      messenger.showSnackBar(
                         const SnackBar(
                           content: Text('Cliente atualizado com sucesso'),
                         ),
@@ -232,7 +235,7 @@ class _ClientPageState extends State<ClientPage> {
                       break;
 
                     case ClientEditResult.deleted:
-                      Navigator.pop(context, ClientEditResult.deleted);
+                      navigator.pop(ClientEditResult.deleted);
                       break;
                   }
                 }

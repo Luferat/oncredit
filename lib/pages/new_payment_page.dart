@@ -112,7 +112,7 @@ class _NewPaymentPageState extends State<NewPaymentPage> {
                   const SizedBox(height: 16),
 
                   DropdownButtonFormField<String>(
-                    value: _method,
+                    initialValue: _method,
                     decoration: const InputDecoration(
                       labelText: 'Forma de pagamento',
                     ),

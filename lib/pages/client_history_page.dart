@@ -62,7 +62,7 @@ class ClientHistoryPage extends StatelessWidget {
 
                     return ListView.separated(
                       itemCount: history.length,
-                      separatorBuilder: (_, __) => const Divider(),
+                      separatorBuilder: (_, _) => const Divider(),
                       itemBuilder: (context, index) {
                         final item = history[index];
                         final isPurchase =

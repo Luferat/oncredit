@@ -143,6 +143,7 @@ class _ClientListPageState extends State<ClientListPage> {
                       title: Text(client.name),
                       subtitle: Text('CPF: ${client.formattedCpf}'),
                       onTap: () async {
+                        final messenger = ScaffoldMessenger.of(context);
                         final result = await Navigator.push<ClientEditResult>(
                           context,
                           MaterialPageRoute(
@@ -152,8 +153,7 @@ class _ClientListPageState extends State<ClientListPage> {
 
                         if (result == ClientEditResult.deleted) {
                           _reloadClients();
-
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar( // ← usa a referência capturada
                             const SnackBar(
                               content: Text('Cliente apagado com sucesso'),
                             ),

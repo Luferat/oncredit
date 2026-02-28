@@ -172,7 +172,7 @@ class _SettingsPageState extends State<SettingsPage> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               child: AnimatedBuilder(
                 animation: themeController,
-                builder: (_, __) => SwitchListTile(
+                builder: (_, _) => SwitchListTile(
                   secondary: const Icon(Icons.dark_mode),
                   title: const Text('Modo Escuro'),
                   subtitle: const Text('Alternar entre tema claro e escuro'),

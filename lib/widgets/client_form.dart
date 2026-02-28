@@ -3,20 +3,17 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-class ClientForm extends StatelessWidget {
+class ClientForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-
   final TextEditingController nameController;
   final TextEditingController cpfController;
   final List<TextEditingController> phoneControllers;
-
   final VoidCallback onAddPhone;
   final void Function(int index) onRemovePhone;
   final VoidCallback onSave;
-
   final bool cpfEnabled;
 
-  ClientForm({
+  const ClientForm({
     super.key,
     required this.formKey,
     required this.nameController,
@@ -28,25 +25,47 @@ class ClientForm extends StatelessWidget {
     this.cpfEnabled = true,
   });
 
+  @override
+  State<ClientForm> createState() => _ClientFormState();
+}
+
+class _ClientFormState extends State<ClientForm> {
+  final _nameFocus = FocusNode();
+
   final _cpfMask = MaskTextInputFormatter(
     mask: '###.###.###-##',
     filter: {'#': RegExp(r'[0-9]')},
   );
-
   final _phoneMask = MaskTextInputFormatter(
     mask: '(##) #########',
     filter: {'#': RegExp(r'[0-9]')},
   );
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _nameFocus.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameFocus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
-      key: formKey,
+      key: widget.formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
-            controller: nameController,
+            controller: widget.nameController,
+            focusNode: _nameFocus,
             decoration: const InputDecoration(labelText: 'Nome'),
             validator: (v) => v == null || v.isEmpty ? 'Informe o nome' : null,
           ),
@@ -54,16 +73,18 @@ class ClientForm extends StatelessWidget {
           const SizedBox(height: 12),
 
           TextFormField(
-            controller: cpfController,
-            enabled: cpfEnabled,
+            controller: widget.cpfController,
+            enabled: widget.cpfEnabled,
             decoration: InputDecoration(
               labelText: 'CPF',
-              helperText: cpfEnabled ? null : 'CPF não pode ser alterado',
+              helperText: widget.cpfEnabled
+                  ? null
+                  : 'CPF não pode ser alterado',
             ),
             keyboardType: TextInputType.number,
             inputFormatters: [_cpfMask],
             validator: (v) {
-              if (!cpfEnabled) return null;
+              if (!widget.cpfEnabled) return null;
               return v == null || v.isEmpty ? 'Informe o CPF' : null;
             },
           ),
@@ -74,13 +95,12 @@ class ClientForm extends StatelessWidget {
             'Telefones',
             style: TextStyle(fontSize: 18, color: Colors.black54),
           ),
-
           const SizedBox(height: 8),
 
           ..._buildPhones(),
 
           TextButton.icon(
-            onPressed: onAddPhone,
+            onPressed: widget.onAddPhone,
             icon: const Icon(Icons.add),
             label: const Text('Adicionar telefone'),
           ),
@@ -88,8 +108,8 @@ class ClientForm extends StatelessWidget {
           const SizedBox(height: 18),
 
           ElevatedButton.icon(
-            icon: Icon(Icons.save),
-            onPressed: onSave,
+            icon: const Icon(Icons.save),
+            onPressed: widget.onSave,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.deepPurple,
               foregroundColor: Colors.white,
@@ -104,22 +124,26 @@ class ClientForm extends StatelessWidget {
   }
 
   List<Widget> _buildPhones() {
-    return List.generate(phoneControllers.length, (index) {
+    return List.generate(widget.phoneControllers.length, (index) {
+      final isLast = index == widget.phoneControllers.length - 1;
       return Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: Row(
           children: [
             Expanded(
               child: TextFormField(
-                controller: phoneControllers[index],
-                decoration: const InputDecoration(labelText: 'Telefone com DDD'),
+                controller: widget.phoneControllers[index],
+                autofocus: isLast,
+                decoration: const InputDecoration(
+                  labelText: 'Telefone com DDD',
+                ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [_phoneMask],
               ),
             ),
             IconButton(
               icon: const Icon(Icons.delete),
-              onPressed: () => onRemovePhone(index),
+              onPressed: () => widget.onRemovePhone(index),
             ),
           ],
         ),

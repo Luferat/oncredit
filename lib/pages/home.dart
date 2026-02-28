@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
+    if (!mounted) return;  // ← segunda checagem, após o await do showDialog
     Navigator.pushReplacementNamed(context, '/clients');
   }
 

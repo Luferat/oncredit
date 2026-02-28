@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: themeController,
-      builder: (_, __) => MaterialApp(
+      builder: (_, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
         themeMode: themeController.themeMode,
         theme: ThemeData(
