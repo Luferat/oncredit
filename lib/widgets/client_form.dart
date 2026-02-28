@@ -31,6 +31,7 @@ class ClientForm extends StatefulWidget {
 
 class _ClientFormState extends State<ClientForm> {
   final _nameFocus = FocusNode();
+  final List<FocusNode> _phoneFocusNodes = [];
 
   final _cpfMask = MaskTextInputFormatter(
     mask: '###.###.###-##',
@@ -45,6 +46,10 @@ class _ClientFormState extends State<ClientForm> {
   void initState() {
     super.initState();
 
+    for (var i = 0; i < widget.phoneControllers.length; i++) {
+      _phoneFocusNodes.add(FocusNode());
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _nameFocus.requestFocus();
     });
@@ -53,7 +58,27 @@ class _ClientFormState extends State<ClientForm> {
   @override
   void dispose() {
     _nameFocus.dispose();
+    for (final node in _phoneFocusNodes) {
+      node.dispose();
+    }
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant ClientForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.phoneControllers.length > _phoneFocusNodes.length) {
+      final newNode = FocusNode();
+      _phoneFocusNodes.add(newNode);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        newNode.requestFocus();
+      });
+    }
+
+    while (_phoneFocusNodes.length > widget.phoneControllers.length) {
+      _phoneFocusNodes.removeLast().dispose();
+    }
   }
 
   @override
@@ -134,6 +159,7 @@ class _ClientFormState extends State<ClientForm> {
               child: TextFormField(
                 controller: widget.phoneControllers[index],
                 autofocus: isLast,
+                focusNode: _phoneFocusNodes[index],
                 decoration: const InputDecoration(
                   labelText: 'Telefone com DDD',
                 ),
