@@ -22,12 +22,13 @@ class ClientService {
     required List<String> phones,
   }) async {
     final uid = AppConfig.fixedUid;
+    final normalizedPhones = _normalizePhones(phones);
     final response = await _dio.post(
       '${AppConfig.baseUrl}/users/$uid/clients.json',
       data: {
         'name': name,
         'cpf': cpf,
-        'phones': phones,
+        'phones': normalizedPhones,
         'createdAt': DateTime.now().toIso8601String().substring(0, 10),
       },
     );
@@ -59,5 +60,12 @@ class ClientService {
   Future<void> deleteClient(String clientId) async {
     final uid = AppConfig.fixedUid;
     await _dio.delete('${AppConfig.baseUrl}/users/$uid/clients/$clientId.json');
+  }
+
+  List<String> _normalizePhones(List<String> phones) {
+    return phones
+        .map((p) => p.replaceAll(RegExp(r'[^0-9]'), ''))
+        .where((p) => p.isNotEmpty)
+        .toList();
   }
 }

@@ -1,0 +1,83 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:oncredit/config/app_config.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
+class UpdateInfo {
+  final String version;
+  final String apkUrl;
+  final bool force;
+
+  const UpdateInfo({
+    required this.version,
+    required this.apkUrl,
+    required this.force,
+  });
+}
+
+class UpdateService {
+  static final String endpoint = '${AppConfig.baseUrl}/app/latest_update.json';
+
+  /// Só permite update em Android nativo
+  static bool get _isSupportedPlatform {
+    if (kIsWeb) return false;
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  static Future<String> getCurrentVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    final build = info.buildNumber.isEmpty ? '0' : info.buildNumber;
+    return '${info.version}+$build';
+  }
+
+  static int parseVersion(String version) {
+    final parts = version.split('+');
+    final date = parts[0].replaceAll('.', '');
+    final build = parts.length > 1 ? parts[1] : '0';
+    return int.parse('$date$build');
+  }
+
+  static Future<UpdateInfo?> checkForUpdate() async {
+    if (!_isSupportedPlatform) return null;
+
+    try {
+      final response = await Dio().get(
+        endpoint,
+        options: Options(
+          sendTimeout: Duration(seconds: 3),
+          receiveTimeout: Duration(seconds: 3),
+        ),
+      );
+
+      if (response.statusCode != 200) return null;
+
+      final data = response.data;
+
+      final latestVersion = data['version'];
+      final apkUrl = data['apk'];
+      final force = data['force'] ?? false;
+
+      if (latestVersion == null || apkUrl == null) {
+        return null;
+      }
+
+      final currentVersion = await getCurrentVersion();
+
+      final latestParsed = parseVersion(latestVersion);
+      final currentParsed = parseVersion(currentVersion);
+
+      if (latestParsed > currentParsed) {
+        return UpdateInfo(version: latestVersion, apkUrl: apkUrl, force: force);
+      }
+    } catch (_) {
+      // Silencioso de propósito: não queremos travar splash
+    }
+
+    return null;
+  }
+}
