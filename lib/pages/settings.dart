@@ -8,6 +8,7 @@ import '../main.dart';
 import '../templates/appbar.dart';
 import '../config/app_config.dart';
 import '../theme/theme_extensions.dart';
+import '../services/biometric_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -19,10 +20,23 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   String _appVersion = '';
 
+  bool _biometricEnabled = false; // ← novo
+  bool _biometricAvailable = false; // ← novo
+
   @override
   void initState() {
     super.initState();
     _loadVersion();
+    _loadBiometric(); // ← novo
+  }
+
+  Future<void> _loadBiometric() async {
+    final available = await BiometricService.isAvailable();
+    final enabled = await BiometricService.isEnabled();
+    setState(() {
+      _biometricAvailable = available;
+      _biometricEnabled = enabled;
+    });
   }
 
   Future<void> _loadVersion() async {
@@ -183,6 +197,29 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
             ),
+
+            if (BiometricService.isSupported && _biometricAvailable) ...[
+              const SizedBox(height: 24),
+
+              _sectionTitle('Segurança'),
+
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: SwitchListTile(
+                  secondary: const Icon(Icons.fingerprint),
+                  title: const Text('Acesso com biometria'),
+                  subtitle: const Text('Solicitar digital ou PIN ao abrir o app'),
+                  value: _biometricEnabled,
+                  onChanged: (value) async {
+                    await BiometricService.setEnabled(value);
+                    setState(() {
+                      _biometricEnabled = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+
 
             const SizedBox(height: 24),
 
@@ -428,6 +465,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     await AppConfig.load();
     await themeController.loadTheme();
+    await _loadBiometric();
 
     if (!mounted) return;
 

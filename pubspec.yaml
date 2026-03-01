@@ -19,6 +19,7 @@ dependencies:
   url_launcher: ^6.2.5
   shared_preferences: ^2.2.2
   package_info_plus: ^8.0.0
+  local_auth: ^2.3.0
 
 dev_dependencies:
   flutter_test:

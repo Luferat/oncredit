@@ -1,6 +1,7 @@
 // lib/pages/home.dart
 
 import 'package:flutter/material.dart';
+import '../services/biometric_service.dart';
 import '../services/update_service.dart';
 import '../widgets/update_dialog.dart';
 
@@ -15,10 +16,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    checkUpdate();
+    _startup();
   }
 
-  Future<void> checkUpdate() async {
+  Future<void> _startup() async {
+    // 1. Verifica atualização
     final update = await UpdateService.checkForUpdate();
 
     if (!mounted) return;
@@ -29,6 +31,23 @@ class _HomePageState extends State<HomePage> {
         barrierDismissible: !update.force,
         builder: (_) => UpdateDialog(update: update),
       );
+    }
+
+    if (!mounted) return;
+
+    // 2. Verifica biometria
+    final biometricEnabled = await BiometricService.isEnabled();
+
+    if (biometricEnabled) {
+      final authenticated = await BiometricService.authenticate();
+
+      if (!mounted) return;
+
+      if (!authenticated) {
+        // Falhou ou cancelou — fecha o app
+        Navigator.pushReplacementNamed(context, '/');
+        return;
+      }
     }
 
     if (!mounted) return;
