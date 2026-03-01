@@ -11,24 +11,25 @@ class Formatters {
     symbol: 'R\$',
   );
 
-  static final currencyInput = TextInputFormatter.withFunction(
-        (oldValue, newValue) {
-      final digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+  static final currencyInput = TextInputFormatter.withFunction((
+    oldValue,
+    newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
 
-      if (digits.isEmpty) {
-        return const TextEditingValue(text: '');
-      }
+    if (digits.isEmpty) {
+      return const TextEditingValue(text: '');
+    }
 
-      final value = double.parse(digits) / 100;
+    final value = double.parse(digits) / 100;
 
-      final text = currencyFormat.format(value);
+    final text = currencyFormat.format(value);
 
-      return TextEditingValue(
-        text: text,
-        selection: TextSelection.collapsed(offset: text.length),
-      );
-    },
-  );
+    return TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  });
 
   static double parseCurrency(String text) {
     final clean = text
@@ -44,19 +45,17 @@ class Formatters {
     final numbers = value.replaceAll(RegExp(r'[^0-9]'), '');
 
     if (numbers.length == 11) {
-      // celular: 11987654321 → (11) 98765-4321
       return '(${numbers.substring(0, 2)}) '
           '${numbers.substring(2, 7)}-'
           '${numbers.substring(7)}';
     }
 
     if (numbers.length == 10) {
-      // fixo: 1132654321 → (11) 3265-4321
       return '(${numbers.substring(0, 2)}) '
           '${numbers.substring(2, 6)}-'
           '${numbers.substring(6)}';
     }
 
-    return value; // fallback
+    return value;
   }
 }

@@ -1,3 +1,5 @@
+// lib/theme/theme_extensions.dart
+
 import 'package:flutter/material.dart';
 
 extension ThemeX on BuildContext {

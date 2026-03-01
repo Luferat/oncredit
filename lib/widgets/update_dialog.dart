@@ -13,7 +13,7 @@ class UpdateDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: !update.force, // bloqueia back se for obrigatório
+      canPop: !update.force,
       child: AlertDialog(
         title: const Text('Nova versão disponível'),
         content: Text(

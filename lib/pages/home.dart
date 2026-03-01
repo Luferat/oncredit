@@ -1,3 +1,5 @@
+// lib/pages/home.dart
+
 import 'package:flutter/material.dart';
 import '../services/update_service.dart';
 import '../widgets/update_dialog.dart';
@@ -10,7 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   @override
   void initState() {
     super.initState();
@@ -30,16 +31,12 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    if (!mounted) return;  // ← segunda checagem, após o await do showDialog
+    if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/clients');
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

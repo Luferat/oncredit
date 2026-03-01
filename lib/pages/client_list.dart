@@ -153,7 +153,7 @@ class _ClientListPageState extends State<ClientListPage> {
 
                         if (result == ClientEditResult.deleted) {
                           _reloadClients();
-                          messenger.showSnackBar( // ← usa a referência capturada
+                          messenger.showSnackBar(
                             const SnackBar(
                               content: Text('Cliente apagado com sucesso'),
                             ),

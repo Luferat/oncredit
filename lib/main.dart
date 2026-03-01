@@ -14,7 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppConfig.load();
 
-  themeController = ThemeController(); // ← aqui usa a global
+  themeController = ThemeController();
   await themeController.loadTheme();
 
   runApp(const MyApp());
