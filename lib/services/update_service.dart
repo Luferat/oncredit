@@ -1,3 +1,5 @@
+// lib/services/update_service.dart
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:oncredit/config/app_config.dart';
@@ -18,7 +20,6 @@ class UpdateInfo {
 class UpdateService {
   static final String endpoint = '${AppConfig.baseUrl}/app/latest_update.json';
 
-  /// Só permite update em Android nativo
   static bool get _isSupportedPlatform {
     if (kIsWeb) return false;
     switch (defaultTargetPlatform) {
@@ -74,9 +75,7 @@ class UpdateService {
       if (latestParsed > currentParsed) {
         return UpdateInfo(version: latestVersion, apkUrl: apkUrl, force: force);
       }
-    } catch (_) {
-      // Silencioso de propósito: não queremos travar splash
-    }
+    } catch (_) {}
 
     return null;
   }

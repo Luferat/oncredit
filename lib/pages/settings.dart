@@ -313,12 +313,14 @@ class _SettingsPageState extends State<SettingsPage> {
 
             _sectionTitle('Zona de Risco', color: Colors.red),
 
-
             Card(
               color: context.colors.errorContainer,
               margin: const EdgeInsets.symmetric(horizontal: 16),
               child: ListTile(
-                leading: Icon(Icons.warning, color: context.colors.onErrorContainer),
+                leading: Icon(
+                  Icons.warning,
+                  color: context.colors.onErrorContainer,
+                ),
                 title: Text(
                   'Editar Configurações Críticas',
                   style: TextStyle(color: context.colors.onErrorContainer),
@@ -424,13 +426,12 @@ class _SettingsPageState extends State<SettingsPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
 
-    // 🔥 RECARREGA CONFIGURAÇÕES
     await AppConfig.load();
     await themeController.loadTheme();
 
     if (!mounted) return;
 
-    setState(() {}); // força rebuild da tela
+    setState(() {});
 
     ScaffoldMessenger.of(
       context,

@@ -70,7 +70,7 @@ class _ClientPageState extends State<ClientPage> {
                 );
                 if (!mounted) return;
                 if (result == true) {
-                  setState(() {}); // recarrega resumo financeiro
+                  setState(() {});
                 }
               },
             ),
@@ -87,7 +87,7 @@ class _ClientPageState extends State<ClientPage> {
                 );
 
                 if (result == true) {
-                  setState(() {}); // atualiza resumo financeiro
+                  setState(() {});
                 }
               },
             ),
@@ -215,7 +215,6 @@ class _ClientPageState extends State<ClientPage> {
 
                 if (confirmed == true) {
                   final result = await navigator.push<ClientEditResult>(
-                    // ← usa navigator
                     MaterialPageRoute(
                       builder: (_) => ClientEditPage(client: client),
                     ),

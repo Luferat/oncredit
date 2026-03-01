@@ -41,6 +41,7 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
     ''',
   };
 
+  // Não altere nada daqui, a não ser que saiba o que está fazendo
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     fixedUid = prefs.getString('fixedUid') ?? fixedUid;
