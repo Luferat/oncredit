@@ -1,10 +1,10 @@
 // lib/pages/home.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/biometric_service.dart';
 import '../services/update_service.dart';
 import '../widgets/update_dialog.dart';
-import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,6 +14,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _showBiometric = false; // ← controla o ícone de biometria
+
   @override
   void initState() {
     super.initState();
@@ -21,9 +23,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _startup() async {
-    // 1. Verifica atualização
     final update = await UpdateService.checkForUpdate();
-
     if (!mounted) return;
 
     if (update != null) {
@@ -36,18 +36,19 @@ class _HomePageState extends State<HomePage> {
 
     if (!mounted) return;
 
-    // 2. Verifica biometria
     final biometricEnabled = await BiometricService.isEnabled();
 
     if (biometricEnabled) {
+      setState(() => _showBiometric = true); // ← exibe o ícone antes de pedir
       final authenticated = await BiometricService.authenticate();
-
       if (!mounted) return;
 
       if (!authenticated) {
-        SystemNavigator.pop(); // ← fecha o app de verdade
+        SystemNavigator.pop();
         return;
       }
+
+      setState(() => _showBiometric = false); // ← volta ao spinner após autenticar
     }
 
     if (!mounted) return;
@@ -56,6 +57,77 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return Scaffold(
+      backgroundColor: Colors.deepPurple.shade900,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            // Logo — replica o AppTitle mas maior e sem interação
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text(
+                  'ON',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                    fontSize: 42,
+                  ),
+                ),
+                SizedBox(width: 4),
+                Icon(Icons.credit_score, color: Colors.white, size: 50),
+                SizedBox(width: 4),
+                Text(
+                  'Credit',
+                  style: TextStyle(color: Colors.white, fontSize: 36),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 48),
+
+            // Ícone de biometria ou spinner
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: _showBiometric
+                  ? const Icon(
+                Icons.fingerprint,
+                key: ValueKey('fingerprint'),
+                size: 72,
+                color: Colors.orange,
+              )
+                  : const SizedBox(
+                key: ValueKey('spinner'),
+                width: 36,
+                height: 36,
+                child: CircularProgressIndicator(
+                  color: Colors.orange,
+                  strokeWidth: 3,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Texto de status
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: Text(
+                _showBiometric
+                    ? 'Confirme sua identidade'
+                    : 'Aguarde...',
+                key: ValueKey(_showBiometric),
+                style: const TextStyle(
+                  color: Colors.white54,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
