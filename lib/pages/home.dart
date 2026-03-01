@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../services/biometric_service.dart';
 import '../services/update_service.dart';
 import '../widgets/update_dialog.dart';
+import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -44,8 +45,7 @@ class _HomePageState extends State<HomePage> {
       if (!mounted) return;
 
       if (!authenticated) {
-        // Falhou ou cancelou — fecha o app
-        Navigator.pushReplacementNamed(context, '/');
+        SystemNavigator.pop(); // ← fecha o app de verdade
         return;
       }
     }
