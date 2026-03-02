@@ -9,6 +9,7 @@ import '../templates/appbar.dart';
 import '../config/app_config.dart';
 import '../theme/theme_extensions.dart';
 import '../services/biometric_service.dart';
+import '../services/update_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -308,8 +309,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   ListTile(
                     leading: const Icon(Icons.system_update_alt),
-                    title: const Text('Atualização'),
-                    onTap: () => {},
+                    title: const Text('Verificar atualizações'),
+                    onTap: _checkUpdate,
                   ),
 
                   const Divider(height: 1),
@@ -491,5 +492,94 @@ class _SettingsPageState extends State<SettingsPage> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Configurações resetadas')));
+  }
+
+  Future<void> _checkUpdate() async {
+    // Mostra um loading enquanto consulta
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final update = await UpdateService.checkForUpdate();
+
+    if (!mounted) return;
+    Navigator.pop(context); // fecha o loading
+
+    if (update == null) {
+      // Sem atualização disponível
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Tudo atualizado!'),
+          content: Text('Você já está usando a versão $_appVersion, que é a mais recente.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    // Tem atualização — mostra instruções
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Nova versão disponível!'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Versão disponível: ${update.version}'),
+              Text('Versão atual: $_appVersion'),
+              const SizedBox(height: 16),
+              const Text(
+                'Como instalar:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '1. Toque em "Baixar APK" abaixo.\n'
+                    '2. Aguarde o download no navegador.\n'
+                    '3. Abra o arquivo baixado.\n'
+                '4. Toque em "Instalar".\n'
+                  '5. Se solicitado, toque em "Verificar app" → \n'
+                    'Instalar apps desconhecidos e permita para o seu navegador.\n'
+                    '6. Conclua a instalação normalmente.',
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Agora não'),
+          ),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.download),
+            label: const Text('Baixar APK'),
+            onPressed: () async {
+              Navigator.pop(context);
+              final uri = Uri.parse(update.apkUrl);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              } else {
+                messenger.showSnackBar(
+                  const SnackBar(content: Text('Não foi possível abrir o link')),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

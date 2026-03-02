@@ -3,8 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/biometric_service.dart';
-import '../services/update_service.dart';
-import '../widgets/update_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,18 +21,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _startup() async {
-    final update = await UpdateService.checkForUpdate();
-    if (!mounted) return;
-    if (update != null) {
-      await showDialog(
-        context: context,
-        barrierDismissible: !update.force,
-        builder: (_) => UpdateDialog(update: update),
-      );
-    }
+    final biometricEnabled = await BiometricService.isEnabled();
 
     if (!mounted) return;
-    final biometricEnabled = await BiometricService.isEnabled();
 
     if (biometricEnabled) {
       setState(() => _showBiometric = true);
@@ -46,7 +35,7 @@ class _HomePageState extends State<HomePage> {
         return;
       }
 
-      setState(() => _showBiometric = false); // ← volta ao spinner após autenticar
+      setState(() => _showBiometric = false);
     }
 
     if (!mounted) return;
@@ -62,7 +51,6 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
 
-            // Logo — replica o AppTitle mas maior e sem interação
             Row(
               mainAxisSize: MainAxisSize.min,
               children: const [
