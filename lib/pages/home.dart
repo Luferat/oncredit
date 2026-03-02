@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _showBiometric = false; // ← controla o ícone de biometria
+  bool _showBiometric = false;
 
   @override
   void initState() {
@@ -25,7 +25,6 @@ class _HomePageState extends State<HomePage> {
   Future<void> _startup() async {
     final update = await UpdateService.checkForUpdate();
     if (!mounted) return;
-
     if (update != null) {
       await showDialog(
         context: context,
@@ -35,11 +34,10 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (!mounted) return;
-
     final biometricEnabled = await BiometricService.isEnabled();
 
     if (biometricEnabled) {
-      setState(() => _showBiometric = true); // ← exibe o ícone antes de pedir
+      setState(() => _showBiometric = true);
       final authenticated = await BiometricService.authenticate();
       if (!mounted) return;
 

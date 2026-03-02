@@ -60,7 +60,7 @@ class UpdateService {
       final data = response.data;
 
       final latestVersion = data['version'];
-      final apkUrl = data['apk'];
+      final apkUrl = data['link'];
       final force = data['force'] ?? false;
 
       if (latestVersion == null || apkUrl == null) {

@@ -12,6 +12,10 @@ class AppConfig {
   static String fixedUid = 'dev_uid_001';
   static String baseUrl = 'https://jsbpad-default-rtdb.firebaseio.com';
 
+  // Configurações de `/settings`
+  static bool showRepositoryLink = false;
+  static bool showResetLink = false;
+
   // Informações "sobre" o aplicativo
   // Usadas principalmente em '/settings'
   static Map<String, String> about = {

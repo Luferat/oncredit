@@ -66,7 +66,8 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               const Text(
                 'Alterar essas configurações pode quebrar o aplicativo.\n\n'
-                'Use apenas se souber exatamente o que está fazendo.',
+                'Use apenas se souber exatamente o que está fazendo.\n\n'
+                'Em caso de dúvidas, contacte o suporte do aplicativo.',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
@@ -208,7 +209,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: SwitchListTile(
                   secondary: const Icon(Icons.fingerprint),
                   title: const Text('Acesso com biometria'),
-                  subtitle: const Text('Solicitar digital ou PIN ao abrir o app'),
+                  subtitle: const Text(
+                    'Solicitar digital ou PIN ao abrir o app',
+                  ),
                   value: _biometricEnabled,
                   onChanged: (value) async {
                     await BiometricService.setEnabled(value);
@@ -219,7 +222,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
             ],
-
 
             const SizedBox(height: 24),
 
@@ -275,6 +277,10 @@ class _SettingsPageState extends State<SettingsPage> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
+
+
+                  // Usar if (AppConfig.showRepositoryLink)
+
                   ListTile(
                     leading: const Icon(Icons.code),
                     title: const Text('Repositório'),
@@ -283,6 +289,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   const Divider(height: 1),
+
+                  // Fechar if (AppConfig.showRepositoryLink) aqui
+
 
                   ListTile(
                     leading: const Icon(Icons.edit_document),
@@ -298,6 +307,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: const Text('Suporte técnico'),
                     trailing: const Icon(Icons.open_in_new),
                     onTap: _openSupport,
+                  ),
+
+                  const Divider(height: 1),
+
+                  ListTile(
+                    leading: const Icon(Icons.system_update_alt),
+                    title: const Text('Atualizações'),
+                    onTap: ()=>{},
                   ),
 
                   const Divider(height: 1),
@@ -334,6 +351,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     subtitle: Text(AppConfig.baseUrl),
                   ),
 
+
+                  // Usar if (AppConfig.showResetLink)
+
                   const Divider(height: 1),
 
                   ListTile(
@@ -342,6 +362,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     subtitle: const Text('Limpa preferências salvas'),
                     onTap: _resetLocalSettings,
                   ),
+
+                  // Fechar if (AppConfig.showResetLink) aqui
+
                 ],
               ),
             ),
@@ -359,18 +382,18 @@ class _SettingsPageState extends State<SettingsPage> {
                   color: context.colors.onErrorContainer,
                 ),
                 title: Text(
-                  'Editar Configurações Críticas',
+                  'Alterar UID e Base URL',
                   style: TextStyle(color: context.colors.onErrorContainer),
                 ),
                 subtitle: Text(
-                  'Pode comprometer o funcionamento do app',
+                  'Isso pode comprometer o funcionamento do app',
                   style: TextStyle(color: context.colors.onErrorContainer),
                 ),
                 onTap: _editCriticalSettings,
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -441,9 +464,12 @@ class _SettingsPageState extends State<SettingsPage> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Resetar configurações'),
+        title: const Text(
+          '⚠ PERIGO!',
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+        ),
         content: const Text(
-          'Isso apagará configurações locais e tema.\n\nContinuar?',
+          'Isso apagará configurações locais e tema.\nTambém desconectará o aplicativo da base de dados, se esta foi modificada antes.\n\nContinuar?',
         ),
         actions: [
           TextButton(
@@ -452,7 +478,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Resetar'),
+            child: const Text('Apagar'),
           ),
         ],
       ),
