@@ -277,21 +277,16 @@ class _SettingsPageState extends State<SettingsPage> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
+                  if (AppConfig.showRepositoryLink) ...[
+                    ListTile(
+                      leading: const Icon(Icons.code),
+                      title: const Text('Repositório'),
+                      trailing: const Icon(Icons.open_in_new),
+                      onTap: _openRepository,
+                    ),
 
-
-                  // Usar if (AppConfig.showRepositoryLink)
-
-                  ListTile(
-                    leading: const Icon(Icons.code),
-                    title: const Text('Repositório'),
-                    trailing: const Icon(Icons.open_in_new),
-                    onTap: _openRepository,
-                  ),
-
-                  const Divider(height: 1),
-
-                  // Fechar if (AppConfig.showRepositoryLink) aqui
-
+                    const Divider(height: 1),
+                  ],
 
                   ListTile(
                     leading: const Icon(Icons.edit_document),
@@ -313,8 +308,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   ListTile(
                     leading: const Icon(Icons.system_update_alt),
-                    title: const Text('Atualizações'),
-                    onTap: ()=>{},
+                    title: const Text('Atualização'),
+                    onTap: () => {},
                   ),
 
                   const Divider(height: 1),
@@ -351,20 +346,16 @@ class _SettingsPageState extends State<SettingsPage> {
                     subtitle: Text(AppConfig.baseUrl),
                   ),
 
+                  if (AppConfig.showResetLink) ...[
+                    const Divider(height: 1),
 
-                  // Usar if (AppConfig.showResetLink)
-
-                  const Divider(height: 1),
-
-                  ListTile(
-                    leading: const Icon(Icons.cleaning_services),
-                    title: const Text('Resetar Configurações Locais'),
-                    subtitle: const Text('Limpa preferências salvas'),
-                    onTap: _resetLocalSettings,
-                  ),
-
-                  // Fechar if (AppConfig.showResetLink) aqui
-
+                    ListTile(
+                      leading: const Icon(Icons.cleaning_services),
+                      title: const Text('Resetar Configurações Locais'),
+                      subtitle: const Text('Limpa preferências salvas'),
+                      onTap: _resetLocalSettings,
+                    ),
+                  ],
                 ],
               ),
             ),
