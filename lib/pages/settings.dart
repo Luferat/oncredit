@@ -1,5 +1,6 @@
 // lib/pages/settings.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -305,13 +306,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTap: _openSupport,
                   ),
 
-                  const Divider(height: 1),
-
-                  ListTile(
-                    leading: const Icon(Icons.system_update_alt),
-                    title: const Text('Verificar atualizações'),
-                    onTap: _checkUpdate,
-                  ),
+                  if (!kIsWeb) ...[
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.system_update_alt),
+                      title: const Text('Verificar atualizações'),
+                      onTap: _checkUpdate,
+                    ),
+                  ],
 
                   const Divider(height: 1),
 
@@ -513,7 +515,9 @@ class _SettingsPageState extends State<SettingsPage> {
         context: context,
         builder: (_) => AlertDialog(
           title: const Text('Tudo atualizado!'),
-          content: Text('Você já está usando a versão $_appVersion, que é a mais recente.'),
+          content: Text(
+            'Você já está usando a versão $_appVersion, que é a mais recente.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -548,12 +552,12 @@ class _SettingsPageState extends State<SettingsPage> {
               const SizedBox(height: 8),
               const Text(
                 '1. Toque em "Baixar APK" abaixo.\n'
-                    '2. Aguarde o download no navegador.\n'
-                    '3. Abra o arquivo baixado.\n'
+                '2. Aguarde o download no navegador.\n'
+                '3. Abra o arquivo baixado.\n'
                 '4. Toque em "Instalar".\n'
-                  '5. Se solicitado, toque em "Verificar app" → \n'
-                    'Instalar apps desconhecidos e permita para o seu navegador.\n'
-                    '6. Conclua a instalação normalmente.',
+                '5. Se solicitado, toque em "Verificar app" → \n'
+                'Instalar apps desconhecidos e permita para o seu navegador.\n'
+                '6. Conclua a instalação normalmente.',
               ),
             ],
           ),
@@ -573,7 +577,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 await launchUrl(uri, mode: LaunchMode.externalApplication);
               } else {
                 messenger.showSnackBar(
-                  const SnackBar(content: Text('Não foi possível abrir o link')),
+                  const SnackBar(
+                    content: Text('Não foi possível abrir o link'),
+                  ),
                 );
               }
             },
