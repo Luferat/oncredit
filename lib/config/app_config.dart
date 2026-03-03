@@ -1,5 +1,6 @@
 // lib/config/app_config.dart
 
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppConfig {
@@ -13,6 +14,7 @@ class AppConfig {
   static String baseUrl = 'https://jsbpad-default-rtdb.firebaseio.com';
 
   // Configurações de `/settings`
+  // Exibe (true) / oculta (false) algumas configurações estratégicas
   static bool showRepositoryLink = false;
   static bool showResetLink = false;
 
@@ -46,18 +48,43 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
   };
 
   // Não altere nada daqui, a não ser que saiba o que está fazendo
+  // Carrega as configurações do usuário do sistema, caso existam
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     fixedUid = prefs.getString('fixedUid') ?? fixedUid;
     baseUrl = prefs.getString('baseUrl') ?? baseUrl;
   }
 
+  // Salva as configurações do usuário no sistema
   static Future<void> save(String uid, String url) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('fixedUid', uid);
     await prefs.setString('baseUrl', url);
-
     fixedUid = uid;
     baseUrl = url;
+  }
+
+  // Verifica se o UID já foi configurado no dispositivo
+  static Future<bool> hasUid() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('fixedUid') != null;
+  }
+
+  // Verifica se o UID tem acesso válido no Firebase RTDB
+  static Future<bool> validateUid(String uid) async {
+    try {
+      final dio = Dio();
+      final response = await dio.get(
+        '$baseUrl/users/$uid.json',
+        options: Options(
+          sendTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 5),
+        ),
+      );
+      // Firebase retorna null (não 404) quando o nó não existe
+      return response.statusCode == 200 && response.data != null;
+    } catch (_) {
+      return false;
+    }
   }
 }
