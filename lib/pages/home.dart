@@ -58,9 +58,10 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushReplacementNamed(context, '/clients');
   }
 
-  // Solicita e valida o UID no primeiro acesso
   Future<bool> _requestUid() async {
-    final controller = TextEditingController();
+    // ← controllers já preenchidos com os valores default de AppConfig
+    final uidController = TextEditingController(text: AppConfig.fixedUid);
+    final urlController = TextEditingController(text: AppConfig.baseUrl);
     String? errorText;
     bool confirmed = false;
 
@@ -69,29 +70,39 @@ class _HomePageState extends State<HomePage> {
       barrierDismissible: false,
       builder: (dialogContext) {
         return StatefulBuilder(
-          // ← permite atualizar o estado dentro do dialog
           builder: (context, setDialogState) {
             return AlertDialog(
               title: const Text('Bem-vindo ao ONCredit'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Para começar, informe seu UID de acesso.\n\n'
-                    'Você pode obtê-lo com o administrador do sistema.',
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      labelText: 'UID',
-                      border: const OutlineInputBorder(),
-                      errorText: errorText,
+              content: SingleChildScrollView(
+                // ← evita overflow em telas pequenas
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Para começar, configure o acesso ao banco de dados.\n\n'
+                      'Em caso de dúvidas, contacte o administrador do sistema.',
                     ),
-                    autofocus: true,
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: uidController,
+                      decoration: InputDecoration(
+                        labelText: 'UID',
+                        border: const OutlineInputBorder(),
+                        errorText: errorText,
+                      ),
+                      autofocus: true,
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: urlController,
+                      decoration: const InputDecoration(
+                        labelText: 'Base URL',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -100,17 +111,21 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    final uid = controller.text.trim();
+                    final uid = uidController.text.trim();
+                    final url = urlController.text.trim().replaceAll(RegExp(r'/+$'), '');
+
                     if (uid.isEmpty) {
                       setDialogState(() => errorText = 'Informe o UID');
                       return;
                     }
 
-                    // Mostra loading no botão
                     setDialogState(() => errorText = null);
 
-                    // Valida no Firebase
-                    final valid = await AppConfig.validateUid(uid);
+                    // Valida usando a URL informada no formulário
+                    final valid = await AppConfig.validateUid(
+                      uid,
+                      customUrl: url,
+                    );
 
                     if (!valid) {
                       setDialogState(
@@ -119,8 +134,7 @@ class _HomePageState extends State<HomePage> {
                       return;
                     }
 
-                    // Salva e confirma
-                    await AppConfig.save(uid, AppConfig.baseUrl);
+                    await AppConfig.save(uid, url); // ← salva ambos
                     confirmed = true;
                     Navigator.pop(dialogContext);
                   },

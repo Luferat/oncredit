@@ -71,17 +71,17 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
   }
 
   // Verifica se o UID tem acesso válido no Firebase RTDB
-  static Future<bool> validateUid(String uid) async {
+  static Future<bool> validateUid(String uid, {String? customUrl}) async {
+    final targetUrl = customUrl ?? baseUrl; // ← usa customUrl se fornecido, senão usa baseUrl
     try {
       final dio = Dio();
       final response = await dio.get(
-        '$baseUrl/users/$uid.json',
+        '$targetUrl/users/$uid.json', // ← usa targetUrl aqui
         options: Options(
           sendTimeout: const Duration(seconds: 5),
           receiveTimeout: const Duration(seconds: 5),
         ),
       );
-      // Firebase retorna null (não 404) quando o nó não existe
       return response.statusCode == 200 && response.data != null;
     } catch (_) {
       return false;

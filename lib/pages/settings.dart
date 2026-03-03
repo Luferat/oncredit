@@ -109,7 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
     if (result != true) return;
 
     final newUid = uidController.text.trim();
-    final newUrl = urlController.text.trim();
+    final newUrl = urlController.text.trim().replaceAll(RegExp(r'/+$'), '');
 
     final changed = newUid != originalUid || newUrl != originalUrl;
 
