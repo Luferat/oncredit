@@ -59,8 +59,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<bool> _requestUid() async {
-    // ← controllers já preenchidos com os valores default de AppConfig
-    final uidController = TextEditingController(text: AppConfig.fixedUid);
+
+    // Busca o Android ID antes de abrir o dialog
+    final deviceId = await AppConfig.getDeviceId();
+
+    // Controllers já preenchidos com os valores default de AppConfig
+    final uidController = TextEditingController(text: deviceId);
     final urlController = TextEditingController(text: AppConfig.baseUrl);
     String? errorText;
     bool confirmed = false;

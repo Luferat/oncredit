@@ -2,6 +2,8 @@
 
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 
 class AppConfig {
   // 'DEV' para tempo de desenvolvimento
@@ -10,7 +12,7 @@ class AppConfig {
 
   // PERIGO! ATENÇÃO! CUIDADO!
   // Configurações de acesso à API
-  static String fixedUid = 'dev_uid_001';
+  static String fixedUid = '';
   static String baseUrl = 'https://jsbpad-default-rtdb.firebaseio.com';
 
   // Configurações de `/settings`
@@ -47,7 +49,22 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
     ''',
   };
 
-  // Não altere nada daqui, a não ser que saiba o que está fazendo
+  ///////////////////////////////////////////////////////////////////
+  // Não altere nada daqui, a não ser que saiba o que está fazendo //
+  ///////////////////////////////////////////////////////////////////
+
+  // Obtém o Android ID no Android, vazio na Web
+  static Future<String> getDeviceId() async {
+    if (kIsWeb) return '';
+    try {
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+      return androidInfo.id.replaceAll(RegExp(r'[.#$\[\]/]'), '_');
+    } catch (_) {
+      return '';
+    }
+  }
+
   // Carrega as configurações do usuário do sistema, caso existam
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -72,7 +89,8 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
 
   // Verifica se o UID tem acesso válido no Firebase RTDB
   static Future<bool> validateUid(String uid, {String? customUrl}) async {
-    final targetUrl = customUrl ?? baseUrl; // ← usa customUrl se fornecido, senão usa baseUrl
+    final targetUrl =
+        customUrl ?? baseUrl; // ← usa customUrl se fornecido, senão usa baseUrl
     try {
       final dio = Dio();
       final response = await dio.get(
