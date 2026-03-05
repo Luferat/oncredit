@@ -531,7 +531,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
     // Tem atualização — mostra instruções
     final messenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
 
     await showDialog(
       context: context,
